@@ -23,18 +23,11 @@ A comunicação ocorre por TCP/IP, permitindo sincronização entre o robô real
 
 ## 2. Conteúdo do Repositório
 
-/docs/ Documentação, diagramas e imagens
+/cad/ inventor: pças 3D, modelo completo e exportações do plug-in Simscape Multibody Link
 
-/cad/ Arquivos CAD (Inventor) e exportações do Simscape
-
-/simulink_model/ Modelo Simscape Multibody do manipulador
-
-/matlab_interface/ Interface GUIDE (fig/m-files) + funções auxiliares
+/modelo simulink/ Modelo Simscape Multibody do manipulador e interface gráfica
 
 /esp32_firmware/ Código do ESP32 (TCP server + controle)
-
-/tests/ Scripts de teste para simulação e hardware real
-
 
 ---
 
@@ -49,22 +42,23 @@ A comunicação ocorre por TCP/IP, permitindo sincronização entre o robô real
   - Instrument Control Toolbox (para TCP/IP)  
 
 ### Autodesk Inventor
-- Autodesk Inventor 2020 ou superior  
-- Plugin **Simscape Multibody Link** instalado e configurado  
+- Autodesk Inventor 2022 ou superior  
+- Plugin **Simscape Multibody Link** instalado e configurado
+
+**OBS:** o plugin deve ser na mesma versão do MATLAB!!!  
 
 ### ESP32
 - PlatformIO ou Arduino IDE  
 - Bibliotecas utilizadas:
   - WiFi  
-  - AsyncTCP (opcional)
+  - ESP32Servo
 
 ---
 
 ## 4. Como Executar
 
 ### 4.1. Executar apenas o modelo virtual (Simulação)
-Abra o modelo: "simulink_model/robot_multibody.slx"
-
+Abra o modelo: "modelo simulink/montagem1.slx"
 
 E clique em **Run** no Simulink.
 
