@@ -57,34 +57,81 @@ A comunicação ocorre por TCP/IP, permitindo sincronização entre o robô real
 
 ## 4. Como Executar
 
-### 4.1. Executar apenas o modelo virtual (Simulação)
-Abra o modelo: "modelo simulink/montagem1.slx"
+### 4.1. Abrir a interface (GUI)
+
+Abra o arquivo: "modelo simulink/Graphic_Interface.m"
+
+Em seguida, execute o arquivo no MATLAB clicando em **Run** ou usando:
+
+```matlab
+run Graphic_Interface.m
+```
+
+Dentro da interface você encontrará três janelas principais:
+
+- Real-Time Video
+- Forward Kinematics
+- Control Mode
+
+Em seguida, na janela **Control Mode**, pressione **Start**. Isso irá abrir o modelo **Montagem1.slx** no Simulink.
+
+**OBS:** caso o modelo não execute, você precisará alterar o caminho do diretório responsável por carregar as informações do modelo. Para isso, siga as instruções abaixo:
+1. Vá em: **MODELING** -> **DESIGN** -> **Model Explorer**
+2. Na janela que abrir, acesse:
+  **Montagem1** -> **Model Workspace** -> **Filename**
+
+3. Altere o caminho
+   ```matlab
+   C:\Users\luanl\Documents\Matlab\Proj_BracoRobotico\BracoCompleto\Prototipo4\Montagem_DataFile.mat
+   ```
+    para o diretório correspondente onde está localizado o arquivo **Montagem_DataFile.mat** que você baixou. 
+
+4. Feche o MATLAB, abra novamente, execute a interface e pressione **Start**.
+
+**Caso ainda não funcione, utilize o método alternativo:**
+
+1. Abra o arquivo:
+modelo simulink/Montagem1.slx
+
+2. Vá em: **MODELING** -> **SETUP** -> **Model Properties** → **Callbacks**
+   
+3. Clique em **PreLoadFcn**
+Aparece uma caixa de texto em branco.
+
+4. Insira exatamente o seguinte conteúdo:
+```matlab
+Montagem_DataFile
+```
+
+5. Clique **Apply** e salve o modelo.
+   
+6. Feche o MATLAB e abra novamente. Execute a interface e pressione **Start**.
+
+### 4.2. Executar apenas o modelo virtual (Simulação)
+Para executar somente o modelo virtual sem abrir a interface:
+```matlab
+modelo simulink/Montagem1.slx
+```
 
 E clique em **Run** no Simulink.
 
 ---
 
-### 4.2. Abrir a interface (GUI)
-
-```matlab
-run matlab_interface/mainInterface.m
-```
-
-Dentro da interface você encontrará três modos principais:
-
-- Real-Time Video/Telemetry
-- Forward Kinematics (FK)
-- Control Mode (PID + Trajetórias)
-
 ### 4.3. Modo Hardware (ESP32)
 
-1. Suba o firmware da pasta /esp32_firmware/ para o ESP32
+1. Suba o firmware localizado em:
+```matlab
+/esp32_firmware/
+```
 
-2. Configure IP e porta no arquivo: matlab_interface/utils/tcp_setup.m
+2. Configure o IP e a porta gerados pelo ESP32 dentro do modelo:
+```matlab
+modelo simulink/montagem1.slx
+```
 
-3. Na GUI, clique em Connect para estabelecer comunicação
+3. No bloco **TCP/IP Send**, configure o endereço IP e as portas geradas pelo access point do ESP32.
 
-4. O manipulador físico começará a responder aos comandos enviados
+4. Após configurado, o manipulador físico começará a responder aos comandos enviados pelo Simulink.
 
 ## 5. Comunicação TCP/IP
 
@@ -96,7 +143,7 @@ ESP32 → MATLAB (telemetria)
 
 O protocolo segue formato JSON para simplicidade e depuração.
 
-## 5. Status do Projeto
+## 6. Status do Projeto
 
 | Módulo                         | Status             |
 | ------------------------------ | ------------------ |
