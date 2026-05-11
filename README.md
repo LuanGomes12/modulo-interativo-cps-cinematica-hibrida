@@ -1,40 +1,51 @@
-# Módulo Interativo para Controle de Movimento de um Manipulador Robótico Didático
+# Integração de um Modelo Digital Baseado em Cinemática Híbrida e Aprendizado de Máquina em um Manipulador Robótico Didático de 5 Juntas Rotativas
+[![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-blue.svg)](https://www.mathworks.com/products/matlab.html)
+[![ESP32](https://img.shields.io/badge/ESP32-C%2B%2B-green.svg)](https://www.espressif.com/)
+[![Status](https://img.shields.io/badge/Status-Operacional-success.svg)]()
 
-Este repositório contém o desenvolvimento completo de um sistema interativo para controle, visualização e telemetria de um manipulador robótico didático.  
-O projeto integra:
+Este repositório contém o código-fonte, os modelos 3D e o *firmware* referentes ao desenvolvimento de um sistema ciber-físico interativo para controle, visualização e telemetria de um manipulador robótico didático. 
 
-- Modelo mecânico 3D desenvolvido no **Autodesk Inventor**
-- Gêmeo digital construído no **Simscape Multibody**
-- Interface interativa desenvolvida em **MATLAB (GUIDE)**
-- Comunicação **Wi-Fi TCP/IP** com um microcontrolador **ESP32**
-- Controle de servos/motores do manipulador físico
+Este trabalho foi desenvolvido para a dissertação de mestrado do **Programa de Pós-Graduação em Engenharia Elétrica e de Computação (PPGEEC)** da Universidade Federal do Ceará (UFC), campus Sobral.
 
-O objetivo é fornecer uma plataforma educacional e experimental que una **simulação**, **controle**, **visualização** e **execução física** em um único sistema modular.
+O objetivo principal é fornecer uma plataforma educacional e experimental (**Manipula.EDU**) que una simulação, controle, visualização e execução física em um único sistema modular, solucionando a subdeterminação da Cinemática Inversa por meio de Redes Neurais.
 
 ---
 
-## 1. Arquitetura Geral do Sistema
+## 🚀 O Projeto Integra:
 
-![Diagrama_BDD_2](https://github.com/user-attachments/assets/806d89f0-12b0-4a41-96a4-ec408c504df7)
-
-A comunicação ocorre por TCP/IP, permitindo sincronização entre o robô real e o modelo virtual.
-
----
-
-## 2. Conteúdo do Repositório
-
-/cad/ inventor: pças 3D, modelo completo e exportações do plug-in Simscape Multibody Link
-
-/modelo simulink/ Modelo Simscape Multibody do manipulador e interface gráfica
-
-/esp32_firmware/ Código do ESP32 (TCP server + controle)
+- **Modelo Mecânico CAD:** Desenvolvido e montado no Autodesk Inventor.
+- **Modelo Digital (Simulação Dinâmica):** Construído no Simscape Multibody.
+- **Interface Gráfica Interativa:** Desenvolvida em MATLAB (App Designer).
+- **Inteligência Artificial:** Resolução da Cinemática Inversa Híbrida utilizando o modelo Perceptron de Múltiplas Camadas (MLP).
+- **Comunicação Sem Fio:** Protocolo TCP/IP assíncrono entre o PC (*Host*) e o microcontrolador ESP32 (*Edge Device*).
+- **Atuação Física:** Controle multiplexado de servomotores MG995 e MG90S.
 
 ---
 
-## 3. Requisitos de Software
+## 📐 Arquitetura Geral do Sistema
 
-### MATLAB
-- MATLAB R2021a ou superior  
+<img width="821" height="511" alt="Arquitetura_Metodologia" src="https://github.com/user-attachments/assets/3650f28d-e755-4a0a-954d-fe0b25f18a89" />
+
+A comunicação ocorre via rede local sem fio (WLAN) estabelecida pelo próprio ESP32 em modo *Access Point* (AP), garantindo baixa latência e sincronização contínua entre o hardware de acrílico e o modelo virtual no Simulink.
+
+---
+
+## 📁 Estrutura do Repositório
+
+```
+├── /cad_inventor/       # Peças 3D, montagem completa e exportações do Simscape Multibody Link
+├── /modelo_simulink/    # Modelo Simscape Multibody do manipulador e arquivos .mlapp (Interface)
+├── /esp32_firmware/     # Código C++ do ESP32 (Servidor TCP, Parsing de bytes e Controle PWM)
+├── /ml_models/          # Datasets e scripts de treinamento das redes neurais (MLP, RBFN, SVR)
+└── README.md
+```
+
+---
+
+## 💻 Requisitos de Software e Hardware
+
+### MATLAB (Host)
+- Versão: R2021a ou superior  
 - Toolboxes necessárias:
   - Simulink  
   - Simscape  
@@ -42,128 +53,44 @@ A comunicação ocorre por TCP/IP, permitindo sincronização entre o robô real
   - Instrument Control Toolbox (para TCP/IP)  
 
 ### Autodesk Inventor
-- Autodesk Inventor 2022 ou superior  
+- Versão: 2022  
 - Plugin **Simscape Multibody Link** instalado e configurado
 
 **OBS:** o plugin deve ser na mesma versão do MATLAB!!!  
 
 ### ESP32
-- PlatformIO ou Arduino IDE  
+- Ambiente: PlatformIO ou Arduino IDE  
 - Bibliotecas utilizadas:
   - WiFi  
   - ESP32Servo
 
 ---
 
-## 4. Como Executar
+## 📡 Protocolo de Comunicação TCP/IP
 
-### 4.1. Abrir a interface (GUI)
+Para garantir desempenho e evitar overhead na rede educacional, a comunicação não utiliza strings ou JSON. O Simulink empacota as variáveis em ponto flutuante e transmite um payload bruto (vetor de bytes).
 
-Abra o arquivo: "modelo simulink/Graphic_Interface.m"
+- Estrutura do Pacote de Envio (26 Bytes - MATLAB → ESP32):
+  - [1 byte] Cabeçalho de sincronização (0xAA).
+  - [25 bytes] 5 blocos correspondentes às 5 juntas, onde cada bloco contém:
+    - [1 byte] ASCII ID da junta (ex: 'A', 'B').
+    - [4 bytes] Valor angular em float (single IEEE 754).
 
-Em seguida, execute o arquivo no MATLAB clicando em **Run** ou usando:
+O ESP32 recebe o pacote e utiliza uma estrutura de dados union em C++ para remontar os bytes diretamente na memória e aplicar o sinal aos servomotores, respeitando as restrições físicas (travas lógicas) da estrutura de acrílico.
 
-```matlab
-run Graphic_Interface.m
-```
+## 📊 Status do Projeto
 
-Dentro da interface você encontrará três janelas principais:
+| Módulo                                      | Status                 |
+|--------------------------------------------|------------------------|
+| Modelo CAD (Inventor)                      | ✅ Concluído           |
+| Exportação SMBL                            | ✅ Concluído           |
+| Modelo Digital (Simscape)                  | ✅ Concluído           |
+| App Designer (Manipula.EDU)                | ✅ Concluído           |
+| IA (Predição de Pitch via MLP)             | ✅ Concluído           |
+| Comunicação TCP MATLAB ↔ ESP32             | ✅ Testada/Operacional |
+| Execução Física (Sincronismo)              | ✅ Operacional         |
+| Implementação de Sensores (Malha Fechada)  | ⏳ Trabalhos Futuros   |
 
-- Real-Time Video
-- Forward Kinematics
-- Control Mode
+## 👤 Autor
 
-Em seguida, na janela **Control Mode**, pressione **Start**. Isso irá abrir o modelo **Montagem1.slx** no Simulink.
-
-**OBS:** caso o modelo não execute, você precisará alterar o caminho do diretório responsável por carregar as informações do modelo. Para isso, siga as instruções abaixo:
-1. Vá em: **MODELING** -> **DESIGN** -> **Model Explorer**
-2. Na janela que abrir, acesse:
-  **Montagem1** -> **Model Workspace** -> **Filename**
-
-3. Altere o caminho
-   ```matlab
-   C:\Users\luanl\Documents\Matlab\Proj_BracoRobotico\BracoCompleto\Prototipo4\Montagem_DataFile.mat
-   ```
-    para o diretório correspondente onde está localizado o arquivo **Montagem_DataFile.mat** que você baixou. 
-
-4. Feche o MATLAB, abra novamente, execute a interface e pressione **Start**.
-
-**Caso ainda não funcione, utilize o método alternativo:**
-
-1. Abra o arquivo:
-modelo simulink/Montagem1.slx
-
-2. Vá em: **MODELING** -> **SETUP** -> **Model Properties** → **Callbacks**
-   
-3. Clique em **PreLoadFcn**
-Aparece uma caixa de texto em branco.
-
-4. Insira exatamente o seguinte conteúdo:
-```matlab
-Montagem_DataFile
-```
-
-5. Clique **Apply** e salve o modelo.
-   
-6. Feche o MATLAB e abra novamente. Execute a interface e pressione **Start**.
-
-### 4.2. Executar apenas o modelo virtual (Simulação)
-Para executar somente o modelo virtual sem abrir a interface:
-```matlab
-modelo simulink/Montagem1.slx
-```
-
-E clique em **Run** no Simulink.
-
----
-
-### 4.3. Modo Hardware (ESP32)
-
-1. Suba o firmware localizado em:
-```matlab
-/esp32_firmware/
-```
-
-2. Configure o IP e a porta gerados pelo ESP32 dentro do modelo:
-```matlab
-modelo simulink/montagem1.slx
-```
-
-3. No bloco **TCP/IP Send**, configure o endereço IP e as portas geradas pelo access point do ESP32.
-
-4. Após configurado, o manipulador físico começará a responder aos comandos enviados pelo Simulink.
-
-## 5. Comunicação TCP/IP
-
-MATLAB → ESP32 (comandos)
-{ "cmd": "setAngles", "theta": [t1, t2, t3, t4, t5] }
-
-ESP32 → MATLAB (telemetria)
-{ "t": 123.4, "angles": [...], "pos": [x, y, z] }
-
-O protocolo segue formato JSON para simplicidade e depuração.
-
-## 6. Status do Projeto
-
-| Módulo                         | Status             |
-| ------------------------------ | ------------------ |
-| Modelo CAD                     | Concluído          |
-| Exportação SMBL                | Concluído          |
-| Gêmeo Digital no Simscape      | Concluído          |
-| Interface GUIDE                | Funcional          |
-| Comunicação TCP MATLAB ↔ ESP32 | Testada            |
-| Controle Físico                | Operacional        |
-| Melhorias Educacionais         | Em desenvolvimento |
-
-## 7. Próximos Passos
-
-- Adicionar visualização 3D interativa na GUI
-- Criar laboratórios didáticos (cinemática, controle, trajetória)
-- Implementar geração automática de relatórios
-- Integrar métricas de desempenho e telemetria avançada
-- Preparar documentação final para submissão ao desafio
-
-## 8. Equipe
-
-- Luan Gomes — Interface MATLAB, Simscape, comunicação TCP/IP
-- Matheus Soares — Firmware ESP32, controle físico em tempo real
+- Luan Gomes Magalhães Lima
