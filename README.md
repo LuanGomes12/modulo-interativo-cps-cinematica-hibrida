@@ -36,7 +36,6 @@ A comunicação ocorre via rede local sem fio (WLAN) estabelecida pelo próprio 
 ├── /cad_inventor/       # Peças 3D, montagem completa e exportações do Simscape Multibody Link
 ├── /modelo_simulink/    # Modelo Simscape Multibody do manipulador e arquivos .mlapp (Interface)
 ├── /esp32_firmware/     # Código C++ do ESP32 (Servidor TCP, Parsing de bytes e Controle PWM)
-├── /ml_models/          # Datasets e scripts de treinamento das redes neurais (MLP, RBFN, SVR)
 └── README.md
 ```
 
