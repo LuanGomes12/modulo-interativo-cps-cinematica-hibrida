@@ -2,8 +2,8 @@
 #include <ESP32Servo.h>
 
 // ======= CONFIGURAÇÃO DA REDE =======
-const char* ssid = "BracoRobot_AP";
-const char* password = "12345678";
+const char* ssid = [NOME_REDE];
+const char* password = [SENHA_REDE];
 
 // Porta TCP que o servidor vai escutar
 WiFiServer server(5000);
@@ -11,7 +11,7 @@ WiFiServer server(5000);
 // ======= CONFIGURAÇÃO DO SERVO =======
 Servo servoA, servoB, servoC, servoD, servoE;
 const int pinA = 13;
-const int pinB = 12; // Confirme se o pino físico é 12 ou 25
+const int pinB = 12;
 const int pinC = 14;
 const int pinD = 27;
 const int pinE = 26;
@@ -140,9 +140,6 @@ void loop() {
           Serial.print(comando);
           Serial.print(" -> Angulo: ");
           Serial.print(angulo_logico);
-          
-          // (Opcional) Descomente a linha abaixo se precisar depurar o valor físico durante a montagem das outras juntas:
-          // Serial.print(" | (Valor real no pino: "); Serial.print(angulo_motor); Serial.print(")");
           
           Serial.println();
         }
